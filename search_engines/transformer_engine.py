@@ -53,14 +53,14 @@ class TransformersSearchEngine(BaseSearchEngine):
             except:
                 error_count += 1
                 continue
-        print(correct_count)
-        print(error_count)
+        # print(correct_count)
+        # print(error_count)
         results = [{'title': item, 'score': score} for item, score in
                    zip([item['title'] for item in self.data], scores)]
         results = sorted(results, key=lambda x: x['score'], reverse=True)
 
-        print("Query:", query)
-        print("Search took {:.2f} seconds".format(time.time() - start_time))
+        # print("Query:", query)
+        # print("Search took {:.2f} seconds".format(time.time() - start_time))
         return [item['title'] for item in results[:5]]
 
     def _get_query_score_in_doc(self, passages, query):

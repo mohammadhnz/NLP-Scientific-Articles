@@ -99,7 +99,6 @@ class BooleanSearchEngine(BaseSearchEngine):
                 different_words.append(word.lower())
             else:
                 connecting_words.append(word.lower())
-        print(connecting_words)
         total_articles = len(self.articles.keys())
         zeroes_and_ones = []
         zeroes_and_ones_of_all_words = []
@@ -138,7 +137,6 @@ class BooleanSearchEngine(BaseSearchEngine):
         # zeroes_and_ones_of_all_words.insert(0, bitwise_op);
 
         articles = []
-        print(zeroes_and_ones_of_all_words)
         lis = zeroes_and_ones_of_all_words[0]
         cnt = 1
         for index in lis:
