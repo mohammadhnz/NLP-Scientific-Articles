@@ -1,12 +1,15 @@
 import json
+import os.path
 import re
 import sys
 from collections import defaultdict
 from pprint import pprint
 
-import nltk
 from nltk import word_tokenize
 from nltk.corpus import stopwords
+
+
+# import nltk
 # nltk.download('stopwords')
 
 class Node:
@@ -23,7 +26,7 @@ class SlinkedList:
 
 class BooleanProcessor:
     def __init__(self):
-        with open("../data.json", 'r') as file:
+        with open(os.path.dirname(__file__) + '/../data.json', 'r') as file:
             self.data = json.load(file)
         self.articles = dict()
         self.pre_process()
@@ -83,7 +86,7 @@ class BooleanProcessor:
             idx = idx + 1
         self.linked_list_data = linked_list_data
 
-    def boolean_query(self):
+    def query(self):
         query = input('Enter your query:')
         query = word_tokenize(query)
         connecting_words = []
@@ -143,4 +146,4 @@ class BooleanProcessor:
         pprint(articles)
 
 
-BooleanProcessor().boolean_query()
+BooleanProcessor().query()
