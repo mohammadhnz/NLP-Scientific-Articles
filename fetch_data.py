@@ -1,29 +1,9 @@
 import json
+import re
 from collections import defaultdict
 
 import nltk
 import requests
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite3'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db = SQLAlchemy(app)
-# nltk.download("punkt")
-
-class Article(db.Model):
-    id = db.Column(db.String, primary_key=True)
-    title = db.Column(db.String)
-    abstract = db.Column(db.String)
-    author_names = db.relationship('Author', backref='article')
-
-
-class Author(db.Model):
-    __tablename__ = 'author'
-    name = db.Column(db.String, primary_key=True)
-    key = db.Column(db.String, primary_key=True)
-    parent_id = db.Column(db.String, db.ForeignKey("article.id"))
 
 
 def get_data_from_api():
@@ -44,7 +24,6 @@ def get_data_from_api():
 
 
 def initalize():
-    db.create_all()
     articles = []
     data_list = get_data_from_api()
     print(len(data_list))
@@ -60,12 +39,30 @@ class PreProcessor:
     def pre_process(self):
         self._pre_process_for_boolean_search()
 
+    def _finding_all_unique_words_and_freq(words):
+        words_unique = []
+        word_freq = {}
+        for word in words:
+            if word not in words_unique:
+                words_unique.append(word)
+        for word in words_unique:
+            word_freq[word] = words.count(word)
+        return word_freq
+
+    def _finding_freq_of_word_in_doc(word, words):
+        freq = words.count(word)
+
+    def _remove_special_characters(text):
+        regex = re.compile('[^a-zA-Z0-9\s]')
+        text_returned = re.sub(regex, '', text)
+        return text_returned
+
     def _pre_process_for_boolean_search(self):
         total_words = defaultdict(list)
         total_count = len(self.data)
         counter = 0
         for item in self.data:
-            print(round(counter/total_count, 2))
+            print(round(counter / total_count, 2))
             counter += 1
             title = item['title']
             authors = item['authors']
