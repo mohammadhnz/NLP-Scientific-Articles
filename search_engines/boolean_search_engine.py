@@ -23,7 +23,7 @@ class SlinkedList:
 
 class BooleanProcessor:
     def __init__(self):
-        with open("data.json", 'r') as file:
+        with open("../data.json", 'r') as file:
             self.data = json.load(file)
         self.articles = dict()
         self.pre_process()
