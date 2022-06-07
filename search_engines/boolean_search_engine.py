@@ -8,9 +8,10 @@ from pprint import pprint
 from nltk import word_tokenize
 from nltk.corpus import stopwords
 
-
 # import nltk
 # nltk.download('stopwords')
+from search_engines.base_search_engine import BaseSearchEngine
+
 
 class Node:
     def __init__(self, docId, freq=None):
@@ -24,14 +25,16 @@ class SlinkedList:
         self.head = head
 
 
-class BooleanProcessor:
+class BooleanSearchEngine(BaseSearchEngine):
+    engine_type = "boolean retrieval"
+
     def __init__(self):
         with open(os.path.dirname(__file__) + '/../data.json', 'r') as file:
             self.data = json.load(file)
         self.articles = dict()
-        self.pre_process()
+        self._pre_process()
 
-    def pre_process(self):
+    def _pre_process(self):
         self._pre_process_for_boolean_search()
 
     def _finding_all_unique_words_and_freq(self, words):
@@ -86,8 +89,7 @@ class BooleanProcessor:
             idx = idx + 1
         self.linked_list_data = linked_list_data
 
-    def query(self):
-        query = input('Enter your query:')
+    def query(self, query):
         query = word_tokenize(query)
         connecting_words = []
         cnt = 1
@@ -97,11 +99,10 @@ class BooleanProcessor:
                 different_words.append(word.lower())
             else:
                 connecting_words.append(word.lower())
-        print(connecting_words)
         total_articles = len(self.articles.keys())
         zeroes_and_ones = []
         zeroes_and_ones_of_all_words = []
-        for word in (different_words):
+        for word in different_words:
             if word.lower() in self.unique_words_all:
                 zeroes_and_ones = [0] * total_articles
                 linkedlist = self.linked_list_data[word].head
@@ -136,14 +137,11 @@ class BooleanProcessor:
         # zeroes_and_ones_of_all_words.insert(0, bitwise_op);
 
         articles = []
-        print(zeroes_and_ones_of_all_words)
         lis = zeroes_and_ones_of_all_words[0]
         cnt = 1
         for index in lis:
             if index == 1:
                 articles.append(self.articles[cnt])
             cnt = cnt + 1
-        pprint(articles)
+        return [item['title'] for item in articles[:5]]
 
-
-BooleanProcessor().query()

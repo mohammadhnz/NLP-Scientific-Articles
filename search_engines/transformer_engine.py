@@ -2,22 +2,26 @@ import json
 import os.path
 import re
 import time
+
 from nltk import sent_tokenize, word_tokenize, WordNetLemmatizer
 from sentence_transformers import CrossEncoder
-
 
 # import nltk
 # nltk.download('wordnet')
 # nltk.download('omw-1.4')
+from search_engines.base_search_engine import BaseSearchEngine
 
-class TransformersSearchEngine:
+
+class TransformersSearchEngine(BaseSearchEngine):
+    engine_type = "transformer based retrieval"
+
     def __init__(self):
         with open(os.path.dirname(__file__) + '/../data.json', 'r') as file:
             self.data = json.load(file)
         self.model = CrossEncoder('cross-encoder/ms-marco-TinyBERT-L-2-v2')
-        self._pre_process_data()
+        self._pre_process()
 
-    def _pre_process_data(self):
+    def _pre_process(self):
         self.data = [item for item in self.data if item['abstract'] is not None]
         lemm = WordNetLemmatizer()
         for item in self.data:
@@ -34,8 +38,7 @@ class TransformersSearchEngine:
         text_returned = re.sub(regex, '', text)
         return text_returned
 
-    def query(self):
-        query = input("Enter search query")
+    def query(self, query):
         start_time = time.time()
         scores = []
         correct_count = 0
@@ -50,23 +53,17 @@ class TransformersSearchEngine:
             except:
                 error_count += 1
                 continue
-        print(correct_count)
-        print(error_count)
+        # print(correct_count)
+        # print(error_count)
         results = [{'title': item, 'score': score} for item, score in
                    zip([item['title'] for item in self.data], scores)]
         results = sorted(results, key=lambda x: x['score'], reverse=True)
 
-        print("Query:", query)
-        print("Search took {:.2f} seconds".format(time.time() - start_time))
-        for hit in results[0:5]:
-            # print("Score: {:.2f}".format(hit['score']), "\t", hit['title'])
-            print(hit['title'])
-        print("==========")
+        # print("Query:", query)
+        # print("Search took {:.2f} seconds".format(time.time() - start_time))
+        return [item['title'] for item in results[:5]]
 
     def _get_query_score_in_doc(self, passages, query):
         model_inputs = [[query, passage] for passage in passages]
         scores = self.model.predict(model_inputs)
         return max(scores)
-
-
-TransformersSearchEngine().query()
