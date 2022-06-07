@@ -11,6 +11,7 @@ from nltk import word_tokenize
 from nltk.corpus import stopwords
 # nltk.download('stopwords')
 # nltk.download('punkt')
+from search_engines.base_search_engine import BaseSearchEngine
 
 
 def list_to_dict(data_list: list, keys: Union[str, tuple], distinct=True) -> dict:
@@ -35,16 +36,16 @@ def list_to_dict(data_list: list, keys: Union[str, tuple], distinct=True) -> dic
     return data_dict
 
 
-class TF_IDF_Processor:
+class TF_IDF_Processor(BaseSearchEngine):
     def __init__(self):
         with open("../data.json", 'r') as file:
             data = json.load(file)
             self.data = list_to_dict(data, 'paperId')
         self.articles_tf_idf = dict()
         self.unique_words = set()
-        self.pre_process()
+        self._pre_process()
 
-    def pre_process(self):
+    def _pre_process(self):
         self._pre_process_for_tf_idf_search()
 
     def _remove_special_characters(self, text):
@@ -99,8 +100,7 @@ class TF_IDF_Processor:
 
             self.articles_tf_idf[key] = tf_idf_map
 
-    def tf_idf_query(self, k=3):
-        query = input('Enter your query:')
+    def query(self, query, k=5):
         query = word_tokenize(query)
         different_words = []
         result = []
@@ -120,6 +120,3 @@ class TF_IDF_Processor:
 
         result.sort(reverse=True, key=lambda x: x[1])
         return [x[0]['title'] for x in result[:k]]
-
-
-pprint(TF_IDF_Processor().tf_idf_query())
