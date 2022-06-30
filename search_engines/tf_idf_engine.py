@@ -36,7 +36,7 @@ def list_to_dict(data_list: list, keys: Union[str, tuple], distinct=True) -> dic
     return data_dict
 
 
-class TF_IDF_Processor(BaseSearchEngine):
+class TFIDFProcessor(BaseSearchEngine):
     def __init__(self):
         with open("../data.json", 'r') as file:
             data = json.load(file)
