@@ -74,11 +74,15 @@ class WORDEMBEDDINGProcessor(BaseSearchEngine):
             sentences = self._prepare_text(item['abstract'])
             self.articles += sentences
 
-        with open('articles_all.txt', mode='wt', encoding='utf-8') as f:
-            f.write('\n'.join(self.articles))
-        self.model = fasttext.train_unsupervised('articles_all.txt')
+        # with open('articles_all.txt', mode='wt', encoding='utf-8') as f:
+        #     f.write('\n'.join(self.articles))
+        # self.model = fasttext.train_unsupervised('articles_all.txt')
         # self.model.save_model('articles_model.bin')
-        self.average_vector = self.calculate_all_average_vectors()
+        self.model = fasttext.load_model('articles_model.bin')
+        # self.average_vector = self.calculate_all_average_vectors()
+        # np.save('articles_average_vector', self.average_vector)
+        self.average_vector = np.load('articles_average_vector.npy')
+
 
     def query(self, query, k=5):
         query = self.prepare_query(query)
